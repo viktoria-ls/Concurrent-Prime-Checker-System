@@ -7,17 +7,19 @@ public class Main {
     private static int NUM_THREADS = 1;
 
     public static void main(String[] args) {
+        // Get input
         Scanner sc = new Scanner(System.in);
 
         System.out.print("Enter limit: ");
         LIMIT = sc.nextInt();
         System.out.print("Enter number of threads: ");
         NUM_THREADS = sc.nextInt();
-
         sc.close();
 
-        System.out.printf("LIMIT: %d, NUM_THREADS: %d\n", LIMIT, NUM_THREADS);
+        // Get start time`
+        long startTime = System.currentTimeMillis();
 
+        // Goes through all numbers up to LIMIT and adds to primes List
         List<Integer> primes = new ArrayList<Integer>();
         
         for(int current_num = 2; current_num <= LIMIT; current_num++) {
@@ -26,7 +28,13 @@ public class Main {
             }
         }
 
+        // Get stop time and total time
+        long endTime = System.currentTimeMillis();
+        long totalTime = endTime - startTime;
+
         System.out.printf("%d primes were found.\n",primes.size());
+        System.out.printf("LIMIT: %d, NUM_THREADS: %d\n", LIMIT, NUM_THREADS);
+        System.out.print("TOTAL TIME: " + totalTime + " milliseconds");
     }    
 
     /*
