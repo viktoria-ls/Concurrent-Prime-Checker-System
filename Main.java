@@ -1,12 +1,14 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Main {
     private static int LIMIT = 10000000;
     private static int NUM_THREADS = 1;
-    private static ReentrantLock primeLock = new ReentrantLock();
+    private static ReadWriteLock primeLock = new ReentrantReadWriteLock();
 
     public static void main(String[] args) {
         // Get input
@@ -21,12 +23,16 @@ public class Main {
         long startTime = System.currentTimeMillis();
 
         // Gets [start, end] range for each thread
-        List<Integer> primes = new ArrayList<Integer>();
+        List<Integer> primes = Collections.synchronizedList(new ArrayList<Integer>());
         List<Thread> primeThreads = new ArrayList<Thread>();
 
         int numPerThread = (LIMIT - 1) / NUM_THREADS;
         int tempStart = 2;
         int tempEnd = tempStart + numPerThread - 1;
+
+        if(numPerThread < 1) {
+            numPerThread = 1;
+        }
 
         for (int i = 0; i < NUM_THREADS; i++) {
             PrimeRunnable tempRunnable = new PrimeRunnable(tempStart, tempEnd, primes, primeLock);
@@ -39,8 +45,9 @@ public class Main {
             tempStart = tempEnd + 1;
 
             //Any excess goes to the final thread
-            if (i == NUM_THREADS - 1)
+            if (i == NUM_THREADS - 2) {
                 tempEnd = LIMIT; 
+            }
             else
                 tempEnd += numPerThread;
         }
@@ -52,8 +59,8 @@ public class Main {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
-
+        }        
+        
         // Get stop time and total time
         long endTime = System.currentTimeMillis();
         long totalTime = endTime - startTime;

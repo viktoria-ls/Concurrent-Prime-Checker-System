@@ -1,14 +1,15 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class PrimeRunnable implements Runnable {
     int startInteger;
     int endInteger;
     List<Integer> primeList = new ArrayList<Integer>();
-    ReentrantLock primeLock;
+    ReadWriteLock primeLock;
 
-    public PrimeRunnable(int start, int end, List<Integer> primeList, ReentrantLock primeLock) {
+    public PrimeRunnable(int start, int end, List<Integer> primeList, ReadWriteLock primeLock) {
         this.startInteger = start;
         this.endInteger = end;
         this.primeList = primeList;
@@ -20,9 +21,9 @@ public class PrimeRunnable implements Runnable {
         // Locks the prime list if it is, adds to it, releases the lock
         for(int current_num = startInteger; current_num <= endInteger; current_num++) {
             if(check_prime(current_num)) {
-                primeLock.lock();
+                primeLock.writeLock().lock();
                 primeList.add(current_num);
-                primeLock.unlock();
+                primeLock.writeLock().unlock();
             }
         }
         
